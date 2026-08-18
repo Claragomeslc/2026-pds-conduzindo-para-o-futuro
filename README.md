@@ -1,10 +1,10 @@
 # CONDUZINDO PARA O FUTURO
 ​
-> UM WEBSITE QUE BUSCA CONECTAR INSTRUTORES À ALUNOS QUE TEM INTERESSE EM TER AULAS DE DIREÇÃO DE MANEIRA AUTÔNOMA
-​
-**Disciplina:** Projeto e Desenvolvimento de Sistemas (PDS) · IFPR – Centro de Referência Ponta Grossa · 2026
-**Curso:** Técnico em Informática Integrado ao Ensino Médio
-**Orientador:** Prof. Me. Osmar Ansbach
+> UM WEBSITE QUE BUSCA CONECTAR INSTRUTORES À ALUNOS QUE TEM INTERESSE EM TER AULAS DE DIREÇÃO DE MANEIRA AUTÔNOMA    
+>
+**Disciplina:** Projeto e Desenvolvimento de Sistemas (PDS) · IFPR – Centro de Referência Ponta Grossa · 2026  
+**Curso:** Técnico em Informática Integrado ao Ensino Médio  
+**Orientador:** Prof. Me. Osmar Ansbach  
 ​
 ---
 ​
@@ -14,8 +14,8 @@
 |---|---|---|
 | Kelvin Lotti Roman da Silva | @{{usuario1}} | docs |
 | Maria Clara Gomes de Andrade | [@Claragomeslc](https://github.com/Claragomeslc) | front-end / banco de dados |
-| William Martini Junior | [@WMJR07](https://github.com/WMJR07) | back-end / líder |
-​
+| William Martini Junior | [@WMJR07](https://github.com/WMJR07) | back-end / líder |  
+​  
 ---
 ​
 ## 🔗 Links do projeto
@@ -27,8 +27,6 @@
 | 🎨 Protótipo no Figma | {{link do protótipo}} |
 | 📋 Quadro de gestão (ClickUp) | {{link do board}} |
 ​
-> ⚠️ O link do **documento do Projeto Final** é obrigatório e deve estar **público**. É por ele que o professor acessa a versão de escrita mais recente.
-​
 ---
 ​
 ## 🎯 Sobre o projeto
@@ -37,7 +35,7 @@
 **Solução proposta:** {{o que o sistema faz, em poucas linhas.}}
 **Público-alvo:** {{quem usa.}}
 ​
-**Tecnologias (stack):** {{linguagens, frameworks, banco de dados, ferramentas.}}
+**Tecnologias (stack):** JavaScript, PHP, WordPress, MySQL, Git, GitHub, Figma, draw.io, ClickUp.}}
 ​
 ---
 ​
