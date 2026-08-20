@@ -31,11 +31,11 @@
 ​
 ## 🎯 Sobre o projeto
 ​
-**Problema:** {{descreva brevemente o problema/oportunidade.}}
-**Solução proposta:** {{o que o sistema faz, em poucas linhas.}}
-**Público-alvo:** {{quem usa.}}
+**Problema:** {{descreva brevemente o problema/oportunidade.}}  
+**Solução proposta:** {{o que o sistema faz, em poucas linhas.}}  
+**Público-alvo:** {{quem usa.}}  
 ​
-**Tecnologias (stack):** JavaScript, PHP, WordPress, MySQL, Git, GitHub, Figma, draw.io, ClickUp.}}
+**Tecnologias (stack):** JavaScript, PHP, WordPress, MySQL, Git, GitHub, Figma, draw.io, ClickUp.  
 ​
 ---
 ​
@@ -66,7 +66,7 @@
 |---|---|---|---|---|
 | E1 | Pré-Projeto corrigido (banca) | 10% | ⬜ a fazer | `docs/E1-pre-projeto-corrigido/` |
 | 📄 | Aprovação do Pré-Projeto + Termos de Concordância | 10% | ⬜ a fazer | `docs/aprovacao-e-termos-de-concordancia/` |
-| E2 | Capa, Folha de Rosto e Introdução | 10% | ⬜ a fazer | `docs/E2-introducao/` |
+| E2 | Capa, Folha de Rosto e Introdução | 10% | ✅ feito | `docs/E2-introducao/` |
 | E3 | Fundamentação Teórica | 10% | ⬜ a fazer | `docs/E3-fundamentacao-teorica/` |
 | E4 | Metodologia / Materiais e Métodos | 10% | ⬜ a fazer | `docs/E4-metodologia/` |
 | E5 | Desenvolvimento do Sistema | 30% | ⬜ a fazer | `docs/E5-desenvolvimento/` + `src/` |
