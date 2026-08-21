@@ -12,7 +12,7 @@
 ​
 | Nome | GitHub (@usuário) | Função no projeto |
 |---|---|---|
-| Kelvin Lotti Roman da Silva | @{{usuario1}} | docs |
+| Kelvin Lotti Roman da Silva | [@Kelvin2026254](https://github.com/Kelvin2026254) | docs |
 | Maria Clara Gomes de Andrade | [@Claragomeslc](https://github.com/Claragomeslc) | front-end / banco de dados |
 | William Martini Junior | [@WMJR07](https://github.com/WMJR07) | back-end / líder |  
 ​  
@@ -64,7 +64,7 @@
 ​
 | # | Entrega | Peso | Status | Onde está |
 |---|---|---|---|---|
-| E1 | Pré-Projeto corrigido (banca) | 10% | ⬜ a fazer | `docs/E1-pre-projeto-corrigido/` |
+| E1 | Pré-Projeto corrigido (banca) | 10% | ✅ feito  | `docs/E1-pre-projeto-corrigido/` |
 | 📄 | Aprovação do Pré-Projeto + Termos de Concordância | 10% | ✅ feito | `docs/aprovacao-e-termos-de-concordancia/` |
 | E2 | Capa, Folha de Rosto e Introdução | 10% | ✅ feito | `docs/E2-introducao/` |
 | E3 | Fundamentação Teórica | 10% | ⬜ a fazer | `docs/E3-fundamentacao-teorica/` |
