@@ -1,4 +1,4 @@
-# cconduzindo-para-o-futuro
+# conduzindo-para-o-futuro
 ​
 // projeto em desenvolvimento através do Codespaces do GitHub
 ​
