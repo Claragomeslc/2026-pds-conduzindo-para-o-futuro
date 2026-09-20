@@ -1,8 +1,11 @@
 # conduzindo-para-o-futuro
+
 ​
 // projeto em desenvolvimento através do Codespaces do GitHub
 ​
-## Como instalar o sistema 
+
+## Como instalar o sistema
+
 ```bash
 // verifique se a versão do Node.js está em 24.x
 node --version
@@ -20,6 +23,7 @@ npm install
 ```
 
 ## Como rodar o sistema
+
 ```bash
 // -- passos para executar o projeto localmente
 
@@ -37,6 +41,7 @@ http://localhost:1080/
 ```
 
 ## Como rodar a bateria de testes do sistema
+
 ```bash
 // -- passos para executar os testes localmente
 

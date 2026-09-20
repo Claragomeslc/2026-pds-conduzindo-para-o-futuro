@@ -53,7 +53,8 @@ export default function DefaultLayout({
 
         <PageLayout.Footer divider="line">
           <Text size="small">
-            © {new Date().getFullYear()} Conduzindo Para O Futuro | Todos os direitos reservados.
+            © {new Date().getFullYear()} Conduzindo Para O Futuro | Todos os
+            direitos reservados.
           </Text>
         </PageLayout.Footer>
       </PageLayout>

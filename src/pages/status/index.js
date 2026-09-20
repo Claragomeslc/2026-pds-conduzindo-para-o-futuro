@@ -35,9 +35,11 @@ function UpdatedAt() {
     updatedAtText = new Date(data.updated_at).toLocaleString("pt-BR");
   }
 
-  return <Banner variant="info" layout="compact">
-           <Banner.Title>Última atualização: {updatedAtText}</Banner.Title>
-         </Banner>;
+  return (
+    <Banner variant="info" layout="compact">
+      <Banner.Title>Última atualização: {updatedAtText}</Banner.Title>
+    </Banner>
+  );
 }
 
 function DatabaseStatus() {
@@ -59,13 +61,13 @@ function DatabaseStatus() {
       <Heading as="h2" variant="medium">
         Database
       </Heading>
-      <Stack direction={{ narrow: "vertical", regular: "horizontal"}}>
+      <Stack direction={{ narrow: "vertical", regular: "horizontal" }}>
         <Stack.Item grow>
           <Card>
             <Card.Heading>Conexões abertas</Card.Heading>
             <Card.Description>{openedConnections}</Card.Description>
             <Card.Metadata>Conexões abertas no momento</Card.Metadata>
-          </Card> 
+          </Card>
         </Stack.Item>
         <Stack.Item grow>
           <Card>

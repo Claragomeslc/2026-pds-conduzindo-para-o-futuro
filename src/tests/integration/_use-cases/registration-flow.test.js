@@ -48,7 +48,9 @@ describe("Caso de uso: Fluxo de registro (completo com sucesso)", () => {
     expect(lastEmail.recipients[0]).toBe(
       "<fluxo.de.registro@conduzindoparaofuturo.com.br>",
     );
-    expect(lastEmail.subject).toBe("Ative sua conta no Conduzindo Para O Futuro!");
+    expect(lastEmail.subject).toBe(
+      "Ative sua conta no Conduzindo Para O Futuro!",
+    );
     expect(lastEmail.text).toContain("FluxoDeRegistro");
 
     activationTokenId = orchestrator.extractUUID(lastEmail.text);

@@ -11,12 +11,12 @@ const transporter = nodemailer.createTransport({
   secure: process.env.NODE_ENV === "production" ? true : false,
 });
 
-process.stdout.write(`\n\n📨 Email server running at http://${process.env.EMAIL_HTTP_HOST}:${process.env.EMAIL_HTTP_PORT}\n`);
-
 async function send(mailOptions) {
   try {
     await transporter.sendMail(mailOptions);
-    process.stdout.write(`\n\n📩 Email enviado com sucesso, verifique em http://${process.env.EMAIL_HTTP_HOST}:${process.env.EMAIL_HTTP_PORT}\n`);
+    process.stdout.write(
+      `\n\n📨 Email enviado com sucesso, verifique em http://${process.env.EMAIL_HTTP_HOST}:${process.env.EMAIL_HTTP_PORT}\n`,
+    );
   } catch (error) {
     throw new ServiceError({
       message: "Não foi possível enviar o email.",

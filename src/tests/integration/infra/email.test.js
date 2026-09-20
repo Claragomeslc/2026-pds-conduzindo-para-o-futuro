@@ -25,7 +25,9 @@ describe("infra/email.js", () => {
 
     const lastEmail = await orchestrator.getLastEmail();
     expect(lastEmail.sender).toBe("<contato@conduzindoparaofuturo.com.br>");
-    expect(lastEmail.recipients[0]).toBe("<contato@conduzindoparaofuturo.com.br>");
+    expect(lastEmail.recipients[0]).toBe(
+      "<contato@conduzindoparaofuturo.com.br>",
+    );
     expect(lastEmail.subject).toBe("Último email enviado");
     expect(lastEmail.text).toBe("Corpo do último email.\r\n");
   });
