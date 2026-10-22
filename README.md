@@ -51,6 +51,7 @@
 │   ├── E3-fundamentacao-teorica/
 │   ├── E4-metodologia/
 │   └── E5-desenvolvimento/
+├── database/  ← banco_de_dados.sql
 ├── diagramas/  ← .drawio + exportações PNG/SVG
 ├── prototipos/  ← exportações/links do Figma
 └── src/  ← código-fonte do sistema
