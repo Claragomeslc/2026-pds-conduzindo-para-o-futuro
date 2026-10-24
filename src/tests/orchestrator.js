@@ -64,7 +64,7 @@ async function createUser(userObject) {
     email: userObject?.email || faker.internet.email(),
     password: userObject?.password || "validpassword",
     status: userObject?.status || "pending_confirmation",
-    kind: userObject?.kind || "user",
+    role: userObject?.role || "user",
     cpf: userObject?.cpf || faker.string.numeric(11),
     birth_date: userObject?.birth_date || faker.date.past({ years: 31 }),
     phone: userObject?.phone || faker.phone.number({ style: "international" }),

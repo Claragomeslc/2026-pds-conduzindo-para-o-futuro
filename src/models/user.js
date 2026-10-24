@@ -98,8 +98,8 @@ async function findOneByEmail(email) {
 async function create(userInputValues) {
   userInputValues.status = userInputValues.status || "pending_confirmation";
   validateUserStatus(userInputValues.status);
-  userInputValues.kind = userInputValues.kind || "user";
-  validateUserKind(userInputValues.kind);
+  userInputValues.role = userInputValues.role || "user";
+  validateUserRole(userInputValues.role);
   userInputValues.cnh_category = userInputValues.cnh_category || "B";
   validateCnhCategory(userInputValues.cnh_category);
   await validateUniqueUsername(userInputValues.username);
@@ -115,7 +115,7 @@ async function create(userInputValues) {
     const results = await database.query({
       text: `
         INSERT INTO users (
-            fullname, username, email, password, features, status, kind, cpf, birth_date,  
+            fullname, username, email, password, features, status, role, cpf, birth_date,  
             phone, instructor_credential, cnh, cnh_category, crv
           )
         VALUES
@@ -130,7 +130,7 @@ async function create(userInputValues) {
         userInputValues.password,
         userInputValues.features,
         userInputValues.status,
-        userInputValues.kind,
+        userInputValues.role,
         userInputValues.cpf,
         userInputValues.birth_date,
         userInputValues.phone,
@@ -211,7 +211,7 @@ async function update(username, userInputValues) {
         userWithNewValues.instructor_credential,
         userWithNewValues.cnh,
         userWithNewValues.cnh_category,
-        userWithNewValues.crv
+        userWithNewValues.crv,
       ],
     });
 
@@ -283,7 +283,13 @@ async function validateUniqueCpf(cpf) {
 }
 
 function validateUserStatus(status) {
-  const statuses = ["pending_confirmation", "active", "inactive", "suspended", "closed"];
+  const statuses = [
+    "pending_confirmation",
+    "active",
+    "inactive",
+    "suspended",
+    "closed",
+  ];
   if (status && typeof status === "string" && statuses.indexOf(status) === -1) {
     throw new ValidationError({
       message: "O status do usuário informado é inválido.",
@@ -294,12 +300,12 @@ function validateUserStatus(status) {
   return true;
 }
 
-function validateUserKind(kind) {
-  const kinds = ["user", "admin", "instructor", "student"];
-  if (kind && typeof kind === "string" && kinds.indexOf(kind) === -1) {
+function validateUserRole(role) {
+  const roles = ["user", "admin", "instructor", "student"];
+  if (role && typeof role === "string" && roles.indexOf(role) === -1) {
     throw new ValidationError({
-      message: "O tipo de usuário informado é inválido.",
-      action: "Utilize um dos tipos de usuário válidos.",
+      message: "O papel de usuário informado é inválido.",
+      action: "Utilize um dos papéis de usuário válidos.",
     });
   }
 
@@ -308,7 +314,11 @@ function validateUserKind(kind) {
 
 function validateCnhCategory(cnh_category) {
   const validCategories = ["A", "B", "AB"];
-  if (cnh_category && typeof cnh_category === "string" && validCategories.indexOf(cnh_category) === -1) {
+  if (
+    cnh_category &&
+    typeof cnh_category === "string" &&
+    validCategories.indexOf(cnh_category) === -1
+  ) {
     throw new ValidationError({
       message: "A categoria da CNH informada é inválida.",
       action: "Utilize uma das categorias de CNH válidas (A, B, AB).",
@@ -405,7 +415,7 @@ const user = {
   update,
   setFeatures,
   addFeatures,
-  setStatus
+  setStatus,
 };
 
 export default user;

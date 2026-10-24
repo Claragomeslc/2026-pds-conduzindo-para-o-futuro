@@ -39,9 +39,9 @@ exports.up = (pgm) => {
       default: "pending_confirmation",
     },
 
-    // tipo VARCHAR(20) NOT NULL,
+    // papel VARCHAR(20) NOT NULL,
     // Why 20 in length? "user", "admin", "instructor", "student"
-    kind: {
+    role: {
       type: "varchar(20)",
       notNull: true,
       default: "user",
@@ -84,7 +84,7 @@ exports.up = (pgm) => {
       notNull: false,
       default: "B",
     },
-    
+
     // credencial_instrutor VARCHAR(30)
     instructor_credential: {
       type: "varchar(30)",

@@ -24,7 +24,7 @@ describe("POST /api/v1/users", () => {
           password: "senha123",
           fullname: "Tom Cruzeiro",
           status: "pending_confirmation",
-          kind: "user",
+          role: "user",
           cpf: "12345678900",
           birth_date: "1994-07-17T00:00:00.000Z",
           phone: "+55 11 91234-5678",
@@ -78,7 +78,7 @@ describe("POST /api/v1/users", () => {
           password: "senha123",
           fullname: "Tom Cruzeiro",
           status: "pending_confirmation",
-          kind: "user",
+          role: "user",
           cpf: "12345678911",
           birth_date: "1994-07-17T00:00:00.000Z",
         }),
@@ -97,7 +97,7 @@ describe("POST /api/v1/users", () => {
           password: "senha123",
           fullname: "Tom Cruzeiro",
           status: "pending_confirmation",
-          kind: "user",
+          role: "user",
           cpf: "12345678912",
           birth_date: "1994-07-17T00:00:00.000Z",
         }),
@@ -127,9 +127,9 @@ describe("POST /api/v1/users", () => {
           password: "senha123",
           fullname: "Tom Cruzeiro",
           status: "pending_confirmation",
-          kind: "user",
+          role: "user",
           cpf: "12345678921",
-          birth_date: "1994-07-17T00:00:00.000Z"
+          birth_date: "1994-07-17T00:00:00.000Z",
         }),
       });
 
@@ -146,7 +146,7 @@ describe("POST /api/v1/users", () => {
           password: "senha123",
           fullname: "Tom Cruzeiro",
           status: "pending_confirmation",
-          kind: "user",
+          role: "user",
           cpf: "12345678922",
           birth_date: "1994-07-17T00:00:00.000Z",
         }),
@@ -176,9 +176,9 @@ describe("POST /api/v1/users", () => {
           email: "cpfduplicado1@aeropratica.club",
           password: "senha123",
           status: "pending_confirmation",
-          kind: "user",
+          role: "user",
           cpf: "12345678931",
-          birth_date: "1994-07-17T00:00:00.000Z" 
+          birth_date: "1994-07-17T00:00:00.000Z",
         }),
       });
 
@@ -195,9 +195,9 @@ describe("POST /api/v1/users", () => {
           email: "cpfduplicado2@aeropratica.club",
           password: "senha123",
           status: "pending_confirmation",
-          kind: "user",
+          role: "user",
           cpf: "12345678931",
-          birth_date: "1994-07-17T00:00:00.000Z" 
+          birth_date: "1994-07-17T00:00:00.000Z",
         }),
       });
 
@@ -213,7 +213,7 @@ describe("POST /api/v1/users", () => {
       });
     });
 
-    test("Com `kind` inválido", async () => {
+    test("Com `role` inválido", async () => {
       const response = await fetch(`${webserver.origin}/api/v1/users`, {
         method: "POST",
         headers: {
@@ -224,10 +224,10 @@ describe("POST /api/v1/users", () => {
           username: "trainer",
           email: "treinador@aeropratica.club",
           password: "senha123",
-          kind: "trainer",
+          role: "trainer",
           status: "pending_confirmation",
           cpf: "12345678941",
-          birth_date: "1994-07-17T00:00:00.000Z" 
+          birth_date: "1994-07-17T00:00:00.000Z",
         }),
       });
 
@@ -237,8 +237,8 @@ describe("POST /api/v1/users", () => {
 
       expect(responseBody).toEqual({
         name: "ValidationError",
-        message: "O tipo de usuário informado é inválido.",
-        action: "Utilize um dos tipos de usuário válidos.",
+        message: "O papel de usuário informado é inválido.",
+        action: "Utilize um dos papéis de usuário válidos.",
         status_code: 400,
       });
     });
@@ -254,7 +254,7 @@ describe("POST /api/v1/users", () => {
           username: "trainer",
           email: "treinador@aeropratica.club",
           password: "senha123",
-          kind: "instructor",
+          role: "instructor",
           status: "pending_confirmation",
           cpf: "12345678941",
           birth_date: "1994-07-17T00:00:00.000Z",
@@ -293,7 +293,7 @@ describe("POST /api/v1/users", () => {
           password: "senha123",
           fullname: "Tom Cruzeiro",
           status: "pending_confirmation",
-          kind: "user",
+          role: "user",
           cpf: "12345678991",
           birth_date: "1994-07-17T00:00:00.000Z",
         }),

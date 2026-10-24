@@ -27,7 +27,7 @@ describe("Caso de uso: Fluxo de registro (completo com sucesso)", () => {
         email: "fluxo.de.registro@conduzindoparaofuturo.com.br",
         password: "FluxoDeRegistroPassword",
         status: "pending_confirmation",
-        kind: "user",
+        role: "user",
         cpf: "12345678900",
         birth_date: "1994-07-17T00:00:00.000Z",
         phone: "+55 11 91234-5678",
