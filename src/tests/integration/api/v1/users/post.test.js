@@ -22,6 +22,16 @@ describe("POST /api/v1/users", () => {
           username: "maverick",
           email: "contato@conduzindoparaofuturo.com.br",
           password: "senha123",
+          fullname: "Tom Cruzeiro",
+          status: "pending_confirmation",
+          kind: "user",
+          cpf: "12345678900",
+          birth_date: "1994-07-17T00:00:00.000Z",
+          phone: "+55 11 91234-5678",
+          instructor_credential: "1234567890123456789012",
+          cnh: "12345678901",
+          cnh_category: "B",
+          crv: "12345678901234567",
         }),
       });
 
@@ -66,6 +76,11 @@ describe("POST /api/v1/users", () => {
           username: "emailduplicado1",
           email: "duplicado@conduzindoparaofuturo.com.br",
           password: "senha123",
+          fullname: "Tom Cruzeiro",
+          status: "pending_confirmation",
+          kind: "user",
+          cpf: "12345678911",
+          birth_date: "1994-07-17T00:00:00.000Z",
         }),
       });
 
@@ -80,6 +95,11 @@ describe("POST /api/v1/users", () => {
           username: "emailduplicado2",
           email: "Duplicado@conduzindoparaofuturo.com.br",
           password: "senha123",
+          fullname: "Tom Cruzeiro",
+          status: "pending_confirmation",
+          kind: "user",
+          cpf: "12345678912",
+          birth_date: "1994-07-17T00:00:00.000Z",
         }),
       });
 
@@ -105,6 +125,11 @@ describe("POST /api/v1/users", () => {
           username: "usernameduplicado",
           email: "usernameduplicado1@conduzindoparaofuturo.com.br",
           password: "senha123",
+          fullname: "Tom Cruzeiro",
+          status: "pending_confirmation",
+          kind: "user",
+          cpf: "12345678921",
+          birth_date: "1994-07-17T00:00:00.000Z"
         }),
       });
 
@@ -119,6 +144,11 @@ describe("POST /api/v1/users", () => {
           username: "UsernameDuplicado",
           email: "usernameduplicado2@conduzindoparaofuturo.com.br",
           password: "senha123",
+          fullname: "Tom Cruzeiro",
+          status: "pending_confirmation",
+          kind: "user",
+          cpf: "12345678922",
+          birth_date: "1994-07-17T00:00:00.000Z",
         }),
       });
 
@@ -130,6 +160,116 @@ describe("POST /api/v1/users", () => {
         name: "ValidationError",
         message: "O username informado já está sendo utilizado.",
         action: "Utilize outro username para realizar esta operação.",
+        status_code: 400,
+      });
+    });
+
+    test("Com `cpf` duplicado", async () => {
+      const response1 = await fetch(`${webserver.origin}/api/v1/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullname: "CPF Duplicado",
+          username: "cpfduplicado",
+          email: "cpfduplicado1@aeropratica.club",
+          password: "senha123",
+          status: "pending_confirmation",
+          kind: "user",
+          cpf: "12345678931",
+          birth_date: "1994-07-17T00:00:00.000Z" 
+        }),
+      });
+
+      expect(response1.status).toBe(201);
+
+      const response2 = await fetch(`${webserver.origin}/api/v1/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullname: "CPF Duplicado 2",
+          username: "cpfduplicado2",
+          email: "cpfduplicado2@aeropratica.club",
+          password: "senha123",
+          status: "pending_confirmation",
+          kind: "user",
+          cpf: "12345678931",
+          birth_date: "1994-07-17T00:00:00.000Z" 
+        }),
+      });
+
+      expect(response2.status).toBe(400);
+
+      const response2Body = await response2.json();
+
+      expect(response2Body).toEqual({
+        name: "ValidationError",
+        message: "O CPF informado já está sendo utilizado.",
+        action: "Utilize outro CPF para realizar esta operação.",
+        status_code: 400,
+      });
+    });
+
+    test("Com `kind` inválido", async () => {
+      const response = await fetch(`${webserver.origin}/api/v1/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullname: "Trainador",
+          username: "trainer",
+          email: "treinador@aeropratica.club",
+          password: "senha123",
+          kind: "trainer",
+          status: "pending_confirmation",
+          cpf: "12345678941",
+          birth_date: "1994-07-17T00:00:00.000Z" 
+        }),
+      });
+
+      expect(response.status).toBe(400);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ValidationError",
+        message: "O tipo de usuário informado é inválido.",
+        action: "Utilize um dos tipos de usuário válidos.",
+        status_code: 400,
+      });
+    });
+
+    test("Com `cnh_category` inválido", async () => {
+      const response = await fetch(`${webserver.origin}/api/v1/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullname: "Trainador",
+          username: "trainer",
+          email: "treinador@aeropratica.club",
+          password: "senha123",
+          kind: "instructor",
+          status: "pending_confirmation",
+          cpf: "12345678941",
+          birth_date: "1994-07-17T00:00:00.000Z",
+          cnh_category: "D",
+        }),
+      });
+
+      expect(response.status).toBe(400);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "ValidationError",
+        message: "A categoria da CNH informada é inválida.",
+        action: "Utilize uma das categorias de CNH válidas (A, B, AB).",
         status_code: 400,
       });
     });
@@ -151,6 +291,11 @@ describe("POST /api/v1/users", () => {
           username: "usuariologado",
           email: "usuariologado@conduzindoparaofuturo.com.br",
           password: "senha123",
+          fullname: "Tom Cruzeiro",
+          status: "pending_confirmation",
+          kind: "user",
+          cpf: "12345678991",
+          birth_date: "1994-07-17T00:00:00.000Z",
         }),
       });
 

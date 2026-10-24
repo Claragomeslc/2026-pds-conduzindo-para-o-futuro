@@ -22,9 +22,19 @@ describe("Caso de uso: Fluxo de registro (completo com sucesso)", () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        fullname: "Fluxo De Registro",
         username: "FluxoDeRegistro",
         email: "fluxo.de.registro@conduzindoparaofuturo.com.br",
         password: "FluxoDeRegistroPassword",
+        status: "pending_confirmation",
+        kind: "user",
+        cpf: "12345678900",
+        birth_date: "1994-07-17T00:00:00.000Z",
+        phone: "+55 11 91234-5678",
+        instructor_credential: "1234567890123456789012",
+        cnh: "12345678901",
+        cnh_category: "B",
+        crv: "12345678901234567",
       }),
     });
 

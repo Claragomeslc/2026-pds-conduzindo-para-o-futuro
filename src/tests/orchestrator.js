@@ -58,10 +58,21 @@ async function runPendingMigrations() {
 
 async function createUser(userObject) {
   return await user.create({
+    fullname: userObject?.fullname || faker.person.fullName(),
     username:
       userObject?.username || faker.internet.username().replace(/[_.-]/g, ""),
     email: userObject?.email || faker.internet.email(),
     password: userObject?.password || "validpassword",
+    status: userObject?.status || "pending_confirmation",
+    kind: userObject?.kind || "user",
+    cpf: userObject?.cpf || faker.string.numeric(11),
+    birth_date: userObject?.birth_date || faker.date.past({ years: 31 }),
+    phone: userObject?.phone || faker.phone.number({ style: "international" }),
+    instructor_credential:
+      userObject?.instructor_credential || faker.string.numeric(22),
+    cnh: userObject?.cnh || faker.string.numeric(11),
+    cnh_category: userObject?.cnh_category || "B",
+    crv: userObject?.crv || faker.string.numeric(17),
   });
 }
 
