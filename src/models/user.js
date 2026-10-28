@@ -407,6 +407,71 @@ async function setStatus(userId, status) {
   }
 }
 
+async function queryAll(userInputParams) {
+  let sqlQuery = `
+    SELECT
+      *
+    FROM
+      users
+    WHERE
+      status = 'active'
+  `;
+  let sqlCountQuery = `
+    SELECT
+      COUNT(*)
+    FROM
+      users
+    WHERE
+      status = 'active'
+  `;
+  let values = [];
+  let countValues = [];
+  const filters = userInputParams.filters || {};
+  if (filters.role) {
+    values.push(filters.role);
+    countValues.push(filters.role);
+    sqlQuery += ` AND role = $${values.length} `;
+    sqlCountQuery += ` AND role = $${values.length} `;
+  }
+  if (filters.cnh_category) {
+    values.push(filters.cnh_category);
+    countValues.push(filters.cnh_category);
+    sqlQuery += ` AND cnh_category LIKE '%'||$${values.length}||'%' `;
+    sqlCountQuery += ` AND cnh_category LIKE '%'||$${values.length}||'%' `;
+  }
+
+  const sort = userInputParams.sort || [];
+  if (sort.length > 0) {
+    const sortFields = sort.map((fieldObj) => {
+      const [field, direction] = Object.entries(fieldObj)[0];
+      return `${field} ${direction.toUpperCase()}`;
+    });
+    sqlQuery += ` ORDER BY ${sortFields.join(", ")} `;
+  }
+
+  const pagination = userInputParams.pagination || {};
+  if (pagination.page && pagination.limit) {
+    const offset = (pagination.page - 1) * pagination.limit;
+    values.push(pagination.limit, offset);
+    sqlQuery += ` LIMIT $${values.length - 1} OFFSET $${values.length} `;
+  }
+
+  const count = await database.query({
+    text: sqlCountQuery,
+    values: countValues,
+  });
+
+  const results = await database.query({
+    text: sqlQuery,
+    values: values,
+  });
+
+  return {
+    total: parseInt(count.rows[0].count),
+    users: results.rows,
+  };
+}
+
 const user = {
   create,
   findOneById,
@@ -416,6 +481,7 @@ const user = {
   setFeatures,
   addFeatures,
   setStatus,
+  queryAll,
 };
 
 export default user;
