@@ -93,5 +93,125 @@ describe("POST /api/v1/users/query", () => {
         expect(user.cnh_category).toContain("B");
       });
     });
+
+    test("Com dados válidos buscando `role: instructor` e `fullname: 'JóÀõ'`", async () => {
+      const instructor1 = await orchestrator.createUser({
+        role: "instructor",
+        cnh_category: "B",
+        fullname: "João Luiz Castro",
+      });
+      await orchestrator.activateUser(instructor1);
+
+      const instructor2 = await orchestrator.createUser({
+        role: "instructor",
+        cnh_category: "A",
+        fullname: "Maria João de Souza",
+      });
+      await orchestrator.activateUser(instructor2);
+
+      const instructor3 = await orchestrator.createUser({
+        role: "instructor",
+        cnh_category: "A",
+        fullname: "Carlos Santos",
+      });
+      await orchestrator.activateUser(instructor3);
+
+      const instructor4 = await orchestrator.createUser({
+        role: "instructor",
+        cnh_category: "B",
+        fullname: "João Almeida",
+      });
+      await orchestrator.activateUser(instructor4);
+
+      const user1 = await orchestrator.createUser();
+      await orchestrator.activateUser(user1);
+      const user1SessionObject = await orchestrator.createSession(user1);
+      const response = await fetch(`${webserver.origin}/api/v1/users/query`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `session_id=${user1SessionObject.token}`,
+        },
+        body: JSON.stringify({
+          filters: {
+            role: "instructor",
+            fullname: "JóÀõ",
+          },
+          sort: [{ fullname: "asc" }, { birth_date: "desc" }],
+          pagination: { page: 1, limit: 20 },
+        }),
+      });
+
+      const responseBody = await response.json();
+      expect(response.status).toBe(200);
+
+      expect(responseBody.total).toBe(3);
+
+      responseBody.users.forEach((user) => {
+        expect(user.status).toBe("active");
+        expect(user.role).toBe("instructor");
+        expect(user.fullname.toLowerCase()).toContain("joão");
+      });
+    });
+
+    test("Com dados válidos buscando `role: student` e `fullname`: 'SíLVã'", async () => {
+      const student1 = await orchestrator.createUser({
+        role: "student",
+        cnh_category: "B",
+        fullname: "José da Silva",
+      });
+      await orchestrator.activateUser(student1);
+
+      const student2 = await orchestrator.createUser({
+        role: "student",
+        cnh_category: "A",
+        fullname: "Maria Oliveira Silva",
+      });
+      await orchestrator.activateUser(student2);
+
+      const student3 = await orchestrator.createUser({
+        role: "student",
+        cnh_category: "A",
+        fullname: "Silvia Seixas",
+      });
+      await orchestrator.activateUser(student3);
+
+      const student4 = await orchestrator.createUser({
+        role: "student",
+        cnh_category: "A",
+        fullname: "Silvana Almeida Costa",
+      });
+      await orchestrator.activateUser(student4);
+
+      const user1 = await orchestrator.createUser();
+      await orchestrator.activateUser(user1);
+      const user1SessionObject = await orchestrator.createSession(user1);
+      const response = await fetch(`${webserver.origin}/api/v1/users/query`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `session_id=${user1SessionObject.token}`,
+        },
+        body: JSON.stringify({
+          filters: {
+            role: "student",
+            fullname: "SíLVã",
+          },
+          sort: [{ fullname: "asc" }, { username: "desc" }],
+          pagination: { page: 1, limit: 20 },
+        }),
+      });
+
+      expect(response.status).toBe(200);
+
+      const responseBody = await response.json();
+      expect(responseBody.total).toBe(3);
+
+      responseBody.users.forEach((user) => {
+        expect(user.status).toBe("active");
+        expect(user.role).toBe("student");
+        expect(user.fullname.toLowerCase()).toContain("silva");
+      });
+    });
   });
 });
