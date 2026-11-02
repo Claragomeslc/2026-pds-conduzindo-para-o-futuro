@@ -8,7 +8,7 @@ beforeAll(async () => {
   await orchestrator.runPendingMigrations();
 });
 
-describe("GET /api/v1/instructors/[username]/availability/[availability_id]", () => {
+describe("GET /api/v1/instructors/[username]/availabilities/[availability_id]", () => {
   describe("Usuário anônimo", () => {
     test("Com próprio `username` existente", async () => {
       const createdUser = await orchestrator.createUser();
@@ -19,7 +19,7 @@ describe("GET /api/v1/instructors/[username]/availability/[availability_id]", ()
       expect(uuidVersion(createdInstructorAvailability.id)).toBe(4);
 
       const response = await fetch(
-        `${webserver.origin}/api/v1/instructors/${createdUser.username}/availability/${createdInstructorAvailability.id}`,
+        `${webserver.origin}/api/v1/instructors/${createdUser.username}/availabilities/${createdInstructorAvailability.id}`,
         {
           method: "GET",
           headers: {
@@ -58,7 +58,7 @@ describe("GET /api/v1/instructors/[username]/availability/[availability_id]", ()
       expect(uuidVersion(createdInstructorAvailability.id)).toBe(4);
 
       const response = await fetch(
-        `${webserver.origin}/api/v1/instructors/${createdUserInstructor.username}/availability/${createdInstructorAvailability.id}`,
+        `${webserver.origin}/api/v1/instructors/${createdUserInstructor.username}/availabilities/${createdInstructorAvailability.id}`,
         {
           method: "GET",
           headers: {

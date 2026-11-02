@@ -8,7 +8,7 @@ beforeAll(async () => {
   await orchestrator.runPendingMigrations();
 });
 
-describe("PATCH /api/v1/instructors/[username]/availability/[availability_id]", () => {
+describe("PATCH /api/v1/instructors/[username]/availabilities/[availability_id]", () => {
   describe("Usuário anônimo", () => {
     test("Com próprio `username` existente", async () => {
       const createdUser = await orchestrator.createUser();
@@ -19,7 +19,7 @@ describe("PATCH /api/v1/instructors/[username]/availability/[availability_id]", 
       expect(uuidVersion(createdInstructorAvailability.id)).toBe(4);
 
       const response = await fetch(
-        `${webserver.origin}/api/v1/instructors/${createdUser.username}/availability/${createdInstructorAvailability.id}`,
+        `${webserver.origin}/api/v1/instructors/${createdUser.username}/availabilities/${createdInstructorAvailability.id}`,
         {
           method: "PATCH",
           headers: {
@@ -64,7 +64,7 @@ describe("PATCH /api/v1/instructors/[username]/availability/[availability_id]", 
         await orchestrator.createSession(activatedInstructorB);
 
       const response = await fetch(
-        `${webserver.origin}/api/v1/instructors/InstructorA/availability/${createdInstructorAvailability.id}`,
+        `${webserver.origin}/api/v1/instructors/InstructorA/availabilities/${createdInstructorAvailability.id}`,
         {
           method: "PATCH",
           headers: {
@@ -106,7 +106,7 @@ describe("PATCH /api/v1/instructors/[username]/availability/[availability_id]", 
       expect(uuidVersion(createdInstructorAvailability.id)).toBe(4);
 
       const response = await fetch(
-        `${webserver.origin}/api/v1/instructors/${createdUserInstructor.username}/availability/${createdInstructorAvailability.id}`,
+        `${webserver.origin}/api/v1/instructors/${createdUserInstructor.username}/availabilities/${createdInstructorAvailability.id}`,
         {
           method: "PATCH",
           headers: {
@@ -155,7 +155,7 @@ describe("PATCH /api/v1/instructors/[username]/availability/[availability_id]", 
       expect(uuidVersion(createdInstructorAvailability.id)).toBe(4);
 
       const response = await fetch(
-        `${webserver.origin}/api/v1/instructors/${createdUserInstructor.username}/availability/${createdInstructorAvailability.id}`,
+        `${webserver.origin}/api/v1/instructors/${createdUserInstructor.username}/availabilities/${createdInstructorAvailability.id}`,
         {
           method: "PATCH",
           headers: {
@@ -205,7 +205,7 @@ describe("PATCH /api/v1/instructors/[username]/availability/[availability_id]", 
       expect(uuidVersion(createdInstructorAvailability.id)).toBe(4);
 
       const response = await fetch(
-        `${webserver.origin}/api/v1/instructors/${createdUserInstructor.username}/availability/${createdInstructorAvailability.id}`,
+        `${webserver.origin}/api/v1/instructors/${createdUserInstructor.username}/availabilities/${createdInstructorAvailability.id}`,
         {
           method: "PATCH",
           headers: {

@@ -1,6 +1,5 @@
-
 exports.up = (pgm) => {
-  pgm.createTable("instructor_availability", { 
+  pgm.createTable("instructor_availabilities", {
     id: {
       type: "uuid",
       primaryKey: true,

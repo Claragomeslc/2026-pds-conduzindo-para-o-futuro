@@ -7,14 +7,14 @@ beforeAll(async () => {
   await orchestrator.runPendingMigrations();
 });
 
-describe("POST /api/v1/instructors/[username]/availability/query", () => {
+describe("POST /api/v1/instructors/[username]/availabilities/query", () => {
   describe("Usuário anônimo", () => {
     test("Sem permissão para buscar disponibilidades de instrutores", async () => {
       const createdInstructor = await orchestrator.createUser({
         role: "instructor",
       });
       const response = await fetch(
-        `${webserver.origin}/api/v1/instructors/${createdInstructor.username}/availability/query`,
+        `${webserver.origin}/api/v1/instructors/${createdInstructor.username}/availabilities/query`,
         {
           method: "POST",
           headers: {
@@ -62,7 +62,7 @@ describe("POST /api/v1/instructors/[username]/availability/query", () => {
       });
 
       const response = await fetch(
-        `${webserver.origin}/api/v1/instructors/${createdUserInstructor.username}/availability/query`,
+        `${webserver.origin}/api/v1/instructors/${createdUserInstructor.username}/availabilities/query`,
         {
           method: "POST",
           headers: {
@@ -138,7 +138,7 @@ describe("POST /api/v1/instructors/[username]/availability/query", () => {
       });
 
       const response = await fetch(
-        `${webserver.origin}/api/v1/instructors/${createdUserInstructor.username}/availability/query`,
+        `${webserver.origin}/api/v1/instructors/${createdUserInstructor.username}/availabilities/query`,
         {
           method: "POST",
           headers: {

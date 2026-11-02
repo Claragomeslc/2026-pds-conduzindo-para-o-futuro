@@ -15,7 +15,7 @@ async function findOneByInstructorAndAvailabilityId(
         SELECT
           *
         FROM
-          instructor_availability
+          instructor_availabilities
         WHERE
           instructor_id = $1 AND id = $2
         LIMIT
@@ -48,7 +48,7 @@ async function createAvailability(inputValues) {
   async function runInsertQuery(inputValues) {
     const results = await database.query({
       text: `
-        INSERT INTO instructor_availability (
+        INSERT INTO instructor_availabilities (
             instructor_id, day_of_week, start_time, end_time, status
           )
         VALUES
@@ -91,7 +91,7 @@ async function updateAvailability(instructorId, availabilityId, inputValues) {
     const results = await database.query({
       text: `
         UPDATE
-          instructor_availability
+          instructor_availabilities
         SET
           day_of_week = $3,
           start_time = $4,
@@ -153,7 +153,7 @@ async function queryAll(instructorId, inputParams) {
     SELECT 
       * 
     FROM
-      instructor_availability
+      instructor_availabilities
     WHERE
       instructor_id = $1
   `;

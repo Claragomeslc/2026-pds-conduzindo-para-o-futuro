@@ -8,13 +8,13 @@ beforeAll(async () => {
   await orchestrator.runPendingMigrations();
 });
 
-describe("POST /api/v1/instructors/[username]/availability", () => {
+describe("POST /api/v1/instructors/[username]/availabilities", () => {
   describe("Usuário anônimo", () => {
     test("Com próprio `username` existente", async () => {
       const createdUser = await orchestrator.createUser();
 
       const response = await fetch(
-        `${webserver.origin}/api/v1/instructors/${createdUser.username}/availability`,
+        `${webserver.origin}/api/v1/instructors/${createdUser.username}/availabilities`,
         {
           method: "POST",
           headers: {
@@ -43,7 +43,7 @@ describe("POST /api/v1/instructors/[username]/availability", () => {
       const sessionObject = await orchestrator.createSession(activatedUser);
 
       const response = await fetch(
-        `${webserver.origin}/api/v1/instructors/UsuarioInexistente/availability`,
+        `${webserver.origin}/api/v1/instructors/UsuarioInexistente/availabilities`,
         {
           method: "POST",
           headers: {
@@ -73,7 +73,7 @@ describe("POST /api/v1/instructors/[username]/availability", () => {
       const sessionObject = await orchestrator.createSession(activatedUser);
 
       const response = await fetch(
-        `${webserver.origin}/api/v1/instructors/${createdUser.username}/availability`,
+        `${webserver.origin}/api/v1/instructors/${createdUser.username}/availabilities`,
         {
           method: "POST",
           headers: {
@@ -105,7 +105,7 @@ describe("POST /api/v1/instructors/[username]/availability", () => {
       const sessionObject = await orchestrator.createSession(activatedUser);
 
       const response = await fetch(
-        `${webserver.origin}/api/v1/instructors/${createdUserAdmin.username}/availability`,
+        `${webserver.origin}/api/v1/instructors/${createdUserAdmin.username}/availabilities`,
         {
           method: "POST",
           headers: {
@@ -137,7 +137,7 @@ describe("POST /api/v1/instructors/[username]/availability", () => {
       const sessionObject = await orchestrator.createSession(activatedUser);
 
       const response = await fetch(
-        `${webserver.origin}/api/v1/instructors/${createdUserStudent.username}/availability`,
+        `${webserver.origin}/api/v1/instructors/${createdUserStudent.username}/availabilities`,
         {
           method: "POST",
           headers: {
@@ -178,7 +178,7 @@ describe("POST /api/v1/instructors/[username]/availability", () => {
         await orchestrator.createSession(activatedInstructorB);
 
       const response = await fetch(
-        `${webserver.origin}/api/v1/instructors/InstructorA/availability`,
+        `${webserver.origin}/api/v1/instructors/InstructorA/availabilities`,
         {
           method: "POST",
           headers: {
@@ -211,7 +211,7 @@ describe("POST /api/v1/instructors/[username]/availability", () => {
       const sessionObject = await orchestrator.createSession(activatedUser);
 
       const response = await fetch(
-        `${webserver.origin}/api/v1/instructors/${createdUserInstructor.username}/availability`,
+        `${webserver.origin}/api/v1/instructors/${createdUserInstructor.username}/availabilities`,
         {
           method: "POST",
           headers: {
@@ -249,7 +249,7 @@ describe("POST /api/v1/instructors/[username]/availability", () => {
       const sessionObject = await orchestrator.createSession(activatedUser);
 
       const response = await fetch(
-        `${webserver.origin}/api/v1/instructors/${createdUserInstructor.username}/availability`,
+        `${webserver.origin}/api/v1/instructors/${createdUserInstructor.username}/availabilities`,
         {
           method: "POST",
           headers: {
@@ -288,7 +288,7 @@ describe("POST /api/v1/instructors/[username]/availability", () => {
       const sessionObject = await orchestrator.createSession(activatedUser);
 
       const response = await fetch(
-        `${webserver.origin}/api/v1/instructors/${createdUserInstructor.username}/availability`,
+        `${webserver.origin}/api/v1/instructors/${createdUserInstructor.username}/availabilities`,
         {
           method: "POST",
           headers: {

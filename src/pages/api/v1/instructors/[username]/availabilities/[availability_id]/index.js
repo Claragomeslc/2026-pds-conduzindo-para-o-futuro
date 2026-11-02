@@ -16,10 +16,11 @@ async function getHandler(request, response) {
   const availabilityId = request.query.availability_id;
 
   const targetInstructor = await user.findOneByUsername(username);
-  const availabilityFound = await instructor.findOneByInstructorAndAvailabilityId(
-    targetInstructor.id,
-    availabilityId,
-  );
+  const availabilityFound =
+    await instructor.findOneByInstructorAndAvailabilityId(
+      targetInstructor.id,
+      availabilityId,
+    );
 
   return response.status(200).json(availabilityFound);
 }
