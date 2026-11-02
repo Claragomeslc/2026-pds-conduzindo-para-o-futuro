@@ -1,7 +1,10 @@
 import database from "infra/database.js";
 import { ValidationError, NotFoundError } from "infra/errors.js";
 
-async function findOneByInstructorAndAvailabilityId(instructorId, availabilityId) {
+async function findOneByInstructorAndAvailabilityId(
+  instructorId,
+  availabilityId,
+) {
   const availabilityFound = await runSelectQuery(instructorId, availabilityId);
 
   return availabilityFound;
@@ -145,10 +148,42 @@ function validateStatus(status) {
   return true;
 }
 
+async function queryAll(instructorId, inputParams) {
+  let sqlQuery = `
+    SELECT 
+      * 
+    FROM
+      instructor_availability
+    WHERE
+      instructor_id = $1
+  `;
+  let values = [instructorId];
+  const filters = inputParams.filters || {};
+  if (filters.status) {
+    values.push(filters.status);
+    sqlQuery += ` AND status = $${values.length} `;
+  }
+  if (filters.day_of_week) {
+    values.push(filters.day_of_week);
+    sqlQuery += ` AND day_of_week = $${values.length} `;
+  }
+
+  const results = await database.query({
+    text: sqlQuery,
+    values: values,
+  });
+
+  return {
+    total: results.rows.length,
+    availabilities: results.rows,
+  };
+}
+
 const instructor = {
   findOneByInstructorAndAvailabilityId,
   createAvailability,
   updateAvailability,
+  queryAll,
 };
 
 export default instructor;
