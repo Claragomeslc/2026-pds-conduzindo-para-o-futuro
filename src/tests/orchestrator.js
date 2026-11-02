@@ -6,6 +6,7 @@ import migrator from "models/migrator.js";
 import user from "models/user.js";
 import session from "models/session.js";
 import activation from "models/activation.js";
+import instructor from "models/instructor.js";
 import webserver from "infra/webserver.js";
 
 const emailHttpUrl = `http://${process.env.EMAIL_HTTP_HOST}:${process.env.EMAIL_HTTP_PORT}`;
@@ -118,6 +119,20 @@ async function addFeaturesToUser(userObject, features) {
   return updatedUser;
 }
 
+async function createInstructorAvailability(availabilityObject) {
+  const hours = faker.date.anytime().getHours();
+
+  return await instructor.createAvailability({
+    instructor_id: availabilityObject?.instructor_id || faker.string.uuid(),
+    day_of_week:
+      availabilityObject?.day_of_week ||
+      faker.date.weekday().toLocaleLowerCase(),
+    start_time: availabilityObject?.start_time || `${hours}:00`,
+    end_time: availabilityObject?.end_time || `${hours}:50`,
+    status: availabilityObject?.status || "open",
+  });
+}
+
 const orchestrator = {
   waitForAllServices,
   clearDatabase,
@@ -129,6 +144,7 @@ const orchestrator = {
   extractUUID,
   activateUser,
   addFeaturesToUser,
+  createInstructorAvailability,
 };
 
 export default orchestrator;
