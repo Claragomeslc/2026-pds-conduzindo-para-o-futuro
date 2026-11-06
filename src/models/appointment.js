@@ -1,5 +1,36 @@
 import database from "infra/database.js";
-import { ValidationError } from "infra/errors.js";
+import { ValidationError, NotFoundError } from "infra/errors.js";
+
+async function findOneById(appointmentId, userId) {
+  const appointmentFound = await runSelectQuery(appointmentId, userId);
+
+  return appointmentFound;
+
+  async function runSelectQuery(appointmentId, userId) {
+    const results = await database.query({
+      text: `
+        SELECT
+          *
+        FROM
+          appointments
+        WHERE
+          id = $1 AND (student_id = $2 OR instructor_id = $2)
+        LIMIT
+          1
+        ;`,
+      values: [appointmentId, userId],
+    });
+
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        message: "O id informado não foi encontrado no sistema.",
+        action: "Verifique se o id está digitado corretamente.",
+      });
+    }
+
+    return results.rows[0];
+  }
+}
 
 async function create(studentId, inputValues) {
   inputValues.status = inputValues.status || "reserved";
@@ -101,6 +132,7 @@ function validateClassCategory(class_category) {
 }
 
 const appointment = {
+  findOneById,
   create,
 };
 
