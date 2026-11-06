@@ -73,6 +73,86 @@ async function create(studentId, inputValues) {
   }
 }
 
+async function update(appointmentId, userId, inputValues) {
+  const currentAppointment = await findOneById(appointmentId, userId);
+
+  if ("starts_at" in inputValues) {
+    inputValues.day_of_week = getDayOfWeek(inputValues.starts_at);
+  }
+  if ("status" in inputValues) {
+    validateStatus(inputValues.status);
+    if (inputValues.status === "pending_payment") {
+      inputValues.confirmed_at = new Date().toISOString();
+    } else if (inputValues.status === "booked") {
+      inputValues.paid_at = new Date().toISOString();
+    } else if (inputValues.status === "completed") {
+      inputValues.completed_at = new Date().toISOString();
+    } else if (inputValues.status === "canceled") {
+      if (!inputValues.canceled_reason) {
+        throw new ValidationError({
+          message: "O motivo para cancelamento do agendamento é obrigatório.",
+          action: "Verifique se o motivo para cancelamento está preenchido.",
+        });
+      }
+      inputValues.canceled_at = new Date().toISOString();
+      inputValues.canceled_by = userId;
+    }
+  }
+
+  const appointmentWithNewValues = { ...currentAppointment, ...inputValues };
+
+  const updatedAppointment = await runUpdateQuery(appointmentWithNewValues);
+  return updatedAppointment;
+
+  async function runUpdateQuery(appointmentWithNewValues) {
+    const results = await database.query({
+      text: `
+        UPDATE
+          appointments
+        SET
+          class_category = $3,
+          day_of_week = $4,
+          duration_time = $5,
+          starts_at = $6,
+          ends_at = $7,
+          price = $8,
+          observations = $9,
+          status = $10,
+          confirmed_at = $11,
+          paid_at = $12,
+          completed_at = $13,
+          canceled_at = $14,
+          canceled_by = $15,
+          canceled_reason = $16,
+          updated_at = timezone('utc', now())
+        WHERE
+          id = $1 AND (student_id = $2 OR instructor_id = $2)
+        RETURNING
+          *
+      `,
+      values: [
+        appointmentId,
+        userId,
+        appointmentWithNewValues.class_category,
+        appointmentWithNewValues.day_of_week,
+        appointmentWithNewValues.duration_time,
+        appointmentWithNewValues.starts_at,
+        appointmentWithNewValues.ends_at,
+        appointmentWithNewValues.price,
+        appointmentWithNewValues.observations,
+        appointmentWithNewValues.status,
+        appointmentWithNewValues.confirmed_at,
+        appointmentWithNewValues.paid_at,
+        appointmentWithNewValues.completed_at,
+        appointmentWithNewValues.canceled_at,
+        appointmentWithNewValues.canceled_by,
+        appointmentWithNewValues.canceled_reason,
+      ],
+    });
+    return results.rows[0];
+  }
+}
+
 function getDayOfWeek(startsAtInput) {
   const startsAt = new Date(startsAtInput);
   if (isNaN(startsAt.getTime())) {
@@ -134,6 +214,7 @@ function validateClassCategory(class_category) {
 const appointment = {
   findOneById,
   create,
+  update,
 };
 
 export default appointment;

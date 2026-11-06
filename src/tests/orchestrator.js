@@ -161,6 +161,23 @@ async function createAppointment(appointmentObject) {
   });
 }
 
+function getDayOfWeek(dateParam) {
+  const newDate = new Date(dateParam);
+  // Definindo hora para meia-noite para evitar problemas de fuso horário
+  newDate.setHours(0, 0, 0, 0);
+  const daysOfWeek = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+  ];
+
+  return daysOfWeek[newDate.getDay()];
+}
+
 const orchestrator = {
   waitForAllServices,
   clearDatabase,
@@ -174,6 +191,7 @@ const orchestrator = {
   addFeaturesToUser,
   createInstructorAvailability,
   createAppointment,
+  getDayOfWeek,
 };
 
 export default orchestrator;
