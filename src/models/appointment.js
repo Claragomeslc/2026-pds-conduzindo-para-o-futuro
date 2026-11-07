@@ -211,10 +211,105 @@ function validateClassCategory(class_category) {
   return true;
 }
 
+async function queryAll(userId, inputParams) {
+  let sqlQuery = `
+    FROM
+      appointments
+    WHERE
+      (student_id = $1 OR instructor_id = $1)
+  `;
+  let sqlSort = "";
+  let sqlPagination = "";
+  let values = [userId];
+  let countValues = [userId];
+  const filters = inputParams.filters || {};
+  if (filters.student_id) {
+    values.push(filters.student_id);
+    countValues.push(filters.student_id);
+    sqlQuery += ` AND student_id = $${values.length} `;
+  }
+  if (filters.status) {
+    values.push(filters.status);
+    countValues.push(filters.status);
+    sqlQuery += ` AND status = $${values.length} `;
+  }
+  if (filters.day_of_week) {
+    values.push(filters.day_of_week);
+    countValues.push(filters.day_of_week);
+    sqlQuery += ` AND day_of_week = $${values.length} `;
+  }
+  if (filters.starts_at) {
+    if (filters.starts_at.from) {
+      const startsAtFrom = new Date(filters.starts_at.from);
+      // Definindo hora para meia-noite para evitar problemas de fuso horário
+      startsAtFrom.setHours(0, 0, 0, 0);
+      values.push(startsAtFrom);
+      countValues.push(startsAtFrom);
+      sqlQuery += ` AND starts_at >= $${values.length} `;
+    }
+    if (filters.starts_at.to) {
+      const startsAtTo = new Date(filters.starts_at.to);
+      startsAtTo.setHours(23, 50, 50, 999);
+      values.push(startsAtTo);
+      countValues.push(startsAtTo);
+      sqlQuery += ` AND starts_at <= $${values.length} `;
+    }
+  }
+  if (filters.ends_at) {
+    if (filters.ends_at.from) {
+      const endsAtFrom = new Date(filters.ends_at.from);
+      // Definindo hora para meia-noite para evitar problemas de fuso horário
+      endsAtFrom.setHours(0, 0, 0, 0);
+      values.push(endsAtFrom);
+      countValues.push(endsAtFrom);
+      sqlQuery += ` AND ends_at >= $${values.length} `;
+    }
+    if (filters.ends_at.to) {
+      const endsAtTo = new Date(filters.ends_at.to);
+      endsAtTo.setHours(23, 50, 50, 999);
+      values.push(endsAtTo);
+      countValues.push(endsAtTo);
+      sqlQuery += ` AND ends_at <= $${values.length} `;
+    }
+  }
+
+  const sort = inputParams.sort || {};
+  const sortFields = [];
+  Object.keys(sort).forEach((chave) => {
+    sortFields.push(`${chave} ${sort[chave].toUpperCase()}`);
+  });
+  if (sortFields.length > 0) {
+    sqlSort += ` ORDER BY ${sortFields.join(", ")} `;
+  }
+
+  const pagination = inputParams.pagination || {};
+  if (pagination.page && pagination.limit) {
+    const offset = (pagination.page - 1) * pagination.limit;
+    values.push(pagination.limit, offset);
+    sqlPagination += ` LIMIT $${values.length - 1} OFFSET $${values.length} `;
+  }
+
+  const count = await database.query({
+    text: `SELECT COUNT(*) ${sqlQuery}`,
+    values: countValues,
+  });
+
+  const results = await database.query({
+    text: `SELECT * ${sqlQuery} ${sqlSort} ${sqlPagination}`,
+    values: values,
+  });
+
+  return {
+    total: parseInt(count.rows[0].count),
+    appointments: results.rows,
+  };
+}
+
 const appointment = {
   findOneById,
   create,
   update,
+  queryAll,
 };
 
 export default appointment;
