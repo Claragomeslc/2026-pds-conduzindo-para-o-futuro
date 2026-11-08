@@ -178,6 +178,35 @@ function getDayOfWeek(dateParam) {
   return daysOfWeek[newDate.getDay()];
 }
 
+function getNextDayByDayOfWeek(inputDayOfWeek) {
+  const daysOfWeek = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+  ];
+  const targetDayOfWeekIndex = daysOfWeek.indexOf(inputDayOfWeek.toLowerCase());
+
+  const currentDate = new Date();
+  // Definindo hora para meia-noite para evitar problemas de fuso horário
+  currentDate.setHours(0, 0, 0, 0);
+
+  const nowDayOfWeekIndex = currentDate.getDay();
+  let diff = targetDayOfWeekIndex - nowDayOfWeekIndex;
+  if (diff < 1) {
+    diff = diff + 7;
+  }
+
+  const nextDay = new Date();
+  nextDay.setHours(0, 0, 0, 0);
+  nextDay.setDate(currentDate.getDate() + diff);
+
+  return nextDay;
+}
+
 const orchestrator = {
   waitForAllServices,
   clearDatabase,
@@ -192,6 +221,7 @@ const orchestrator = {
   createInstructorAvailability,
   createAppointment,
   getDayOfWeek,
+  getNextDayByDayOfWeek,
 };
 
 export default orchestrator;
