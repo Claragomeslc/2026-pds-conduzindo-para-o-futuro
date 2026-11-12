@@ -7,6 +7,7 @@ import user from "models/user.js";
 import session from "models/session.js";
 import activation from "models/activation.js";
 import instructor from "models/instructor.js";
+import appointment from "models/appointment.js";
 import webserver from "infra/webserver.js";
 
 const emailHttpUrl = `http://${process.env.EMAIL_HTTP_HOST}:${process.env.EMAIL_HTTP_PORT}`;
@@ -133,6 +134,79 @@ async function createInstructorAvailability(availabilityObject) {
   });
 }
 
+async function createAppointment(appointmentObject) {
+  const appointmentStartsAt = faker.date.anytime();
+  appointmentStartsAt.setDate(appointmentStartsAt.getDate() + 5);
+  appointmentStartsAt.setHours(appointmentStartsAt.getHours());
+  appointmentStartsAt.setMinutes(0);
+  appointmentStartsAt.setSeconds(0);
+  appointmentStartsAt.setMilliseconds(0);
+
+  const appointmentEndsAt = new Date(appointmentStartsAt);
+  appointmentEndsAt.setHours(appointmentEndsAt.getHours() + 1);
+
+  const hours = faker.date.anytime().getHours();
+
+  const studentId = appointmentObject?.student_id || faker.string.uuid();
+  return await appointment.create(studentId, {
+    instructor_id: appointmentObject?.instructor_id || faker.string.uuid(),
+    class_category: appointmentObject?.class_category || "B",
+    duration_time: appointmentObject?.duration_time || `${hours}:00`,
+    starts_at:
+      appointmentObject?.starts_at || appointmentStartsAt.toISOString(),
+    ends_at: appointmentObject?.ends_at || appointmentEndsAt.toISOString(),
+    price: appointmentObject?.price || 100.0,
+    observations: appointmentObject?.observations || "Aula de teste",
+    status: appointmentObject?.status || "reserved",
+  });
+}
+
+function getDayOfWeek(dateParam) {
+  const newDate = new Date(dateParam);
+  // Definindo hora para meia-noite para evitar problemas de fuso horário
+  newDate.setHours(0, 0, 0, 0);
+  const daysOfWeek = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+  ];
+
+  return daysOfWeek[newDate.getDay()];
+}
+
+function getNextDayByDayOfWeek(inputDayOfWeek) {
+  const daysOfWeek = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+  ];
+  const targetDayOfWeekIndex = daysOfWeek.indexOf(inputDayOfWeek.toLowerCase());
+
+  const currentDate = new Date();
+  // Definindo hora para meia-noite para evitar problemas de fuso horário
+  currentDate.setHours(0, 0, 0, 0);
+
+  const nowDayOfWeekIndex = currentDate.getDay();
+  let diff = targetDayOfWeekIndex - nowDayOfWeekIndex;
+  if (diff < 1) {
+    diff = diff + 7;
+  }
+
+  const nextDay = new Date();
+  nextDay.setHours(0, 0, 0, 0);
+  nextDay.setDate(currentDate.getDate() + diff);
+
+  return nextDay;
+}
+
 const orchestrator = {
   waitForAllServices,
   clearDatabase,
@@ -145,6 +219,9 @@ const orchestrator = {
   activateUser,
   addFeaturesToUser,
   createInstructorAvailability,
+  createAppointment,
+  getDayOfWeek,
+  getNextDayByDayOfWeek,
 };
 
 export default orchestrator;
