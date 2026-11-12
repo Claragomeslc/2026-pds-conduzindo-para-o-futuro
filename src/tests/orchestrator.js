@@ -8,6 +8,7 @@ import session from "models/session.js";
 import activation from "models/activation.js";
 import instructor from "models/instructor.js";
 import appointment from "models/appointment.js";
+import review from "models/review.js";
 import webserver from "infra/webserver.js";
 
 const emailHttpUrl = `http://${process.env.EMAIL_HTTP_HOST}:${process.env.EMAIL_HTTP_PORT}`;
@@ -207,6 +208,20 @@ function getNextDayByDayOfWeek(inputDayOfWeek) {
   return nextDay;
 }
 
+async function createReview(reviewObject) {
+  if (reviewObject.appointment_id === undefined) {
+    reviewObject.appointment_id = faker.string.uuid();
+  }
+  const reviewerId = reviewObject?.reviewer_user_id || faker.string.uuid();
+  return await review.create(reviewerId, {
+    reviewed_user_id: reviewObject?.reviewed_user_id || faker.string.uuid(),
+    appointment_id: reviewObject?.appointment_id,
+    context: reviewObject?.context || "general",
+    rating: reviewObject?.rating || 1,
+    comment: reviewObject?.comment || faker.lorem.paragraph(),
+  });
+}
+
 const orchestrator = {
   waitForAllServices,
   clearDatabase,
@@ -222,6 +237,7 @@ const orchestrator = {
   createAppointment,
   getDayOfWeek,
   getNextDayByDayOfWeek,
+  createReview,
 };
 
 export default orchestrator;
