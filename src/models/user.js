@@ -96,8 +96,15 @@ async function findOneByEmail(email) {
 }
 
 async function create(userInputValues) {
+  userInputValues.status = userInputValues.status || "pending_confirmation";
+  validateUserStatus(userInputValues.status);
+  userInputValues.role = userInputValues.role || "user";
+  validateUserRole(userInputValues.role);
+  userInputValues.cnh_category = userInputValues.cnh_category || "B";
+  validateCnhCategory(userInputValues.cnh_category);
   await validateUniqueUsername(userInputValues.username);
   await validateUniqueEmail(userInputValues.email);
+  await validateUniqueCpf(userInputValues.cpf);
   await hashPasswordInObject(userInputValues);
   injectDefaultFeaturesInObject(userInputValues);
 
@@ -107,18 +114,30 @@ async function create(userInputValues) {
   async function runInsertQuery(userInputValues) {
     const results = await database.query({
       text: `
-        INSERT INTO
-          users (username, email, password, features)
+        INSERT INTO users (
+            fullname, username, email, password, features, status, role, cpf, birth_date,  
+            phone, instructor_credential, cnh, cnh_category, crv
+          )
         VALUES
-          ($1, $2, $3, $4)
+          ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
         RETURNING
           *
         ;`,
       values: [
+        userInputValues.fullname,
         userInputValues.username,
         userInputValues.email,
         userInputValues.password,
         userInputValues.features,
+        userInputValues.status,
+        userInputValues.role,
+        userInputValues.cpf,
+        userInputValues.birth_date,
+        userInputValues.phone,
+        userInputValues.instructor_credential,
+        userInputValues.cnh,
+        userInputValues.cnh_category,
+        userInputValues.crv,
       ],
     });
     return results.rows[0];
@@ -132,12 +151,20 @@ async function create(userInputValues) {
 async function update(username, userInputValues) {
   const currentUser = await findOneByUsername(username);
 
+  if ("cnh_category" in userInputValues) {
+    validateCnhCategory(userInputValues.cnh_category);
+  }
+
   if ("username" in userInputValues) {
     await validateUniqueUsername(userInputValues.username);
   }
 
   if ("email" in userInputValues) {
     await validateUniqueEmail(userInputValues.email);
+  }
+
+  if ("cpf" in userInputValues) {
+    await validateUniqueCpf(userInputValues.cpf);
   }
 
   if ("password" in userInputValues) {
@@ -155,9 +182,17 @@ async function update(username, userInputValues) {
         UPDATE
           users
         SET
-          username = $2,
-          email = $3,
-          password = $4,
+          fullname = $2,
+          username = $3,
+          email = $4,
+          password = $5,
+          cpf = $6,
+          birth_date = $7,
+          phone = $8,
+          instructor_credential = $9,
+          cnh = $10,
+          cnh_category = $11,
+          crv = $12,
           updated_at = timezone('utc', now())
         WHERE
           id = $1
@@ -166,9 +201,17 @@ async function update(username, userInputValues) {
       `,
       values: [
         userWithNewValues.id,
+        userWithNewValues.fullname,
         userWithNewValues.username,
         userWithNewValues.email,
         userWithNewValues.password,
+        userWithNewValues.cpf,
+        userWithNewValues.birth_date,
+        userWithNewValues.phone,
+        userWithNewValues.instructor_credential,
+        userWithNewValues.cnh,
+        userWithNewValues.cnh_category,
+        userWithNewValues.crv,
       ],
     });
 
@@ -216,6 +259,73 @@ async function validateUniqueEmail(email) {
       action: "Utilize outro email para realizar esta operação.",
     });
   }
+}
+
+async function validateUniqueCpf(cpf) {
+  const results = await database.query({
+    text: `
+      SELECT
+        cpf
+      FROM
+        users
+      WHERE
+        LOWER(cpf) = LOWER($1)
+      ;`,
+    values: [cpf],
+  });
+
+  if (results.rowCount > 0) {
+    throw new ValidationError({
+      message: "O CPF informado já está sendo utilizado.",
+      action: "Utilize outro CPF para realizar esta operação.",
+    });
+  }
+}
+
+function validateUserStatus(status) {
+  const statuses = [
+    "pending_confirmation",
+    "active",
+    "inactive",
+    "suspended",
+    "closed",
+  ];
+  if (status && typeof status === "string" && statuses.indexOf(status) === -1) {
+    throw new ValidationError({
+      message: "O status do usuário informado é inválido.",
+      action: "Utilize um dos status do usuário válidos.",
+    });
+  }
+
+  return true;
+}
+
+function validateUserRole(role) {
+  const roles = ["user", "admin", "instructor", "student"];
+  if (role && typeof role === "string" && roles.indexOf(role) === -1) {
+    throw new ValidationError({
+      message: "O papel de usuário informado é inválido.",
+      action: "Utilize um dos papéis de usuário válidos.",
+    });
+  }
+
+  return true;
+}
+
+function validateCnhCategory(cnh_category) {
+  const validCategories = ["A", "B", "AB"];
+  if (
+    cnh_category &&
+    typeof cnh_category === "string" &&
+    validCategories.indexOf(cnh_category) === -1
+  ) {
+    throw new ValidationError({
+      message: "A categoria da CNH informada é inválida.",
+      action: "Utilize uma das categorias de CNH válidas (A, B, AB).",
+    });
+  }
+
+  return true;
 }
 
 async function hashPasswordInObject(userInputValues) {
@@ -271,6 +381,32 @@ async function addFeatures(userId, features) {
   }
 }
 
+async function setStatus(userId, status) {
+  validateUserStatus(status);
+
+  const updatedUser = await runUpdateQuery(userId, status);
+  return updatedUser;
+
+  async function runUpdateQuery(userId, status) {
+    const results = await database.query({
+      text: `
+       UPDATE
+         users
+       SET
+         status = $2,
+         updated_at = timezone('utc', now())
+       WHERE
+         id = $1
+       RETURNING
+         *
+       ;`,
+      values: [userId, status],
+    });
+
+    return results.rows[0];
+  }
+}
+
 const user = {
   create,
   findOneById,
@@ -279,6 +415,7 @@ const user = {
   update,
   setFeatures,
   addFeatures,
+  setStatus,
 };
 
 export default user;

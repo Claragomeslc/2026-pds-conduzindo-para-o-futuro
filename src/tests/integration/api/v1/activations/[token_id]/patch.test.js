@@ -137,6 +137,7 @@ describe("PATCH /api/v1/activations/[token_id]", () => {
       expect(expiresAt - createdAt).toBe(activation.EXPIRATION_IN_MILLISECONDS);
 
       const activatedUser = await user.findOneById(responseBody.user_id);
+      expect(activatedUser.status).toEqual("active");
       expect(activatedUser.features).toEqual([
         "create:session",
         "read:session",
