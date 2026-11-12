@@ -407,6 +407,68 @@ async function setStatus(userId, status) {
   }
 }
 
+async function queryAll(userInputParams) {
+  let sqlQuery = `
+    FROM
+      users
+    WHERE
+      status = 'active'
+  `;
+  let sqlSort = "";
+  let sqlPagination = "";
+  let values = [];
+  let countValues = [];
+  const filters = userInputParams.filters || {};
+  if (filters.role) {
+    values.push(filters.role);
+    countValues.push(filters.role);
+    sqlQuery += ` AND role = $${values.length} `;
+  }
+  if (filters.cnh_category) {
+    values.push(filters.cnh_category);
+    countValues.push(filters.cnh_category);
+    sqlQuery += ` AND cnh_category LIKE '%'||$${values.length}||'%' `;
+  }
+  if (filters.fullname) {
+    values.push(filters.fullname);
+    countValues.push(filters.fullname);
+    sqlQuery += ` AND unaccent(fullname) ILIKE unaccent('%'||$${values.length}||'%')`;
+  }
+
+  const sort = userInputParams.sort || [];
+  if (sort.length > 0) {
+    const sortFields = sort.map((fieldObj) => {
+      const [field, direction] = Object.entries(fieldObj)[0];
+      return `${field} ${direction.toUpperCase()}`;
+    });
+    sqlSort += ` ORDER BY ${sortFields.join(", ")} `;
+  }
+
+  const pagination = userInputParams.pagination || {};
+  if (pagination.page && pagination.limit) {
+    const offset = (pagination.page - 1) * pagination.limit;
+    values.push(pagination.limit, offset);
+    sqlPagination += ` LIMIT $${values.length - 1} OFFSET $${values.length} `;
+  }
+
+  await database.query({ text: `CREATE EXTENSION IF NOT EXISTS unaccent;` });
+
+  const count = await database.query({
+    text: `SELECT COUNT(*) ${sqlQuery}`,
+    values: countValues,
+  });
+
+  const results = await database.query({
+    text: `SELECT * ${sqlQuery} ${sqlSort} ${sqlPagination}`,
+    values: values,
+  });
+
+  return {
+    total: parseInt(count.rows[0].count),
+    users: results.rows,
+  };
+}
+
 const user = {
   create,
   findOneById,
@@ -416,6 +478,7 @@ const user = {
   setFeatures,
   addFeatures,
   setStatus,
+  queryAll,
 };
 
 export default user;
