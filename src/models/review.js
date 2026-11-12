@@ -106,12 +106,72 @@ async function update(reviewId, userId, inputValues) {
   }
 }
 
+async function queryAll(userId, inputParams) {
+  let sqlQuery = `
+    FROM
+      reviews
+    WHERE
+      rating > 0
+  `;
+  let sqlSort = "";
+  let sqlPagination = "";
+  let values = [];
+  let countValues = [];
+  const filters = inputParams.filters || {};
+  if (filters.reviewer_user_id) {
+    values.push(filters.reviewer_user_id);
+    countValues.push(filters.reviewer_user_id);
+    sqlQuery += ` AND reviewer_user_id = $${values.length} `;
+  }
+  if (filters.reviewed_user_id) {
+    values.push(filters.reviewed_user_id);
+    countValues.push(filters.reviewed_user_id);
+    sqlQuery += ` AND reviewed_user_id = $${values.length} `;
+  }
+  if (filters.appointment_id) {
+    values.push(filters.appointment_id);
+    countValues.push(filters.appointment_id);
+    sqlQuery += ` AND appointment_id = $${values.length} `;
+  }
+
+  const sort = inputParams.sort || {};
+  const sortFields = [];
+  Object.keys(sort).forEach((chave) => {
+    sortFields.push(`${chave} ${sort[chave].toUpperCase()}`);
+  });
+  if (sortFields.length > 0) {
+    sqlSort += ` ORDER BY ${sortFields.join(", ")} `;
+  }
+
+  const pagination = inputParams.pagination || {};
+  if (pagination.page && pagination.limit) {
+    const offset = (pagination.page - 1) * pagination.limit;
+    values.push(pagination.limit, offset);
+    sqlPagination += ` LIMIT $${values.length - 1} OFFSET $${values.length} `;
+  }
+
+  const count = await database.query({
+    text: `SELECT COUNT(*) ${sqlQuery}`,
+    values: countValues,
+  });
+
+  const results = await database.query({
+    text: `SELECT * ${sqlQuery} ${sqlSort} ${sqlPagination}`,
+    values: values,
+  });
+
+  return {
+    total: parseInt(count.rows[0].count),
+    reviews: results.rows,
+  };
+}
+
 function validateContext(context) {
-  const validCategories = ["appointment", "general"];
+  const validContexts = ["appointment", "general"];
   if (
     context &&
     typeof context === "string" &&
-    validCategories.indexOf(context) === -1
+    validContexts.indexOf(context) === -1
   ) {
     throw new ValidationError({
       message: "O contexto da avaliação informado é inválido.",
@@ -139,6 +199,7 @@ const review = {
   findOneById,
   create,
   update,
+  queryAll,
 };
 
 export default review;
