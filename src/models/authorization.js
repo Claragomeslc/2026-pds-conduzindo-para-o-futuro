@@ -7,6 +7,7 @@ const availableFeatures = [
   "read:user:self",
   "update:user",
   "update:user:others",
+  "query:user:instructor",
 
   // SESSION
   "create:session",
@@ -49,6 +50,11 @@ function filterOutput(user, feature, resource) {
   validateUser(user);
   validateFeature(feature);
   validateResource(resource);
+
+  if (feature === "query:user:instructor") {
+    delete resource.password;
+    return resource;
+  }
 
   if (feature === "read:user") {
     return {
