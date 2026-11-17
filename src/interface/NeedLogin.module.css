@@ -1,0 +1,4 @@
+/* Centraliza o botão verticalmente em relação ao título e à descrição */
+.banner [data-component="Banner.Actions"] {
+  align-self: center;
+}
