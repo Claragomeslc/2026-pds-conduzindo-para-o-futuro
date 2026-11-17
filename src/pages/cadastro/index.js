@@ -1,92 +1,135 @@
 import { useState } from "react";
-import { Button, FormControl, Heading, Stack, TextInput } from "@primer/react";
-import DefaultLayout from "interface/DefaultLayout";
+import AuthLayout from "interface/AuthLayout";
+import {
+  Checkbox,
+  Field,
+  Form,
+  RoleSelector,
+  Section,
+  SubmitButton,
+  TextButton,
+  icons,
+} from "interface/AuthLayout/form";
 
 export default function RegisterPage() {
   return (
-    <DefaultLayout
-      contentWidth="small"
+    <AuthLayout
+      mode="signup"
       metadata={{
         title: "Cadastre-se",
         description: "Crie sua conta gratuitamente",
       }}
     >
-      <Stack gap="spacious">
-        <Heading as="h1">Crie Sua Conta</Heading>
-        <RegisterForm />
-      </Stack>
-    </DefaultLayout>
+      <RegisterForm />
+    </AuthLayout>
   );
 }
 
 function RegisterForm() {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("student");
 
-  async function handleSubmit(event) {
+  // Tela apenas visual: o envio do formulário ainda não está conectado à API.
+  function handleSubmit(event) {
     event.preventDefault();
-
-    const requestBody = { username, email, password };
-
-    const response = await fetch("/api/v1/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
-    });
-
-    if (response.status === 201) {
-      location.href = "/cadastro/confirmar";
-    }
   }
 
+  const isInstructor = role === "instructor";
+
   return (
-    <form onSubmit={handleSubmit}>
-      <Stack gap="normal">
-        <FormControl>
-          <FormControl.Label>Nome de usuário</FormControl.Label>
-          <TextInput
-            type="text"
-            value={username}
-            onChange={(event) => {
-              setUsername(event.target.value);
-            }}
-            block
-          />
-        </FormControl>
+    <>
+      <RoleSelector value={role} onChange={setRole} />
 
-        <FormControl>
-          <FormControl.Label>Email</FormControl.Label>
-          <TextInput
-            type="text"
-            value={email}
-            onChange={(event) => {
-              setEmail(event.target.value);
-            }}
-            block
-          />
-        </FormControl>
+      <Form onSubmit={handleSubmit}>
+        <Field
+          label="Nome completo"
+          name="name"
+          placeholder="Como podemos te chamar?"
+          autoComplete="name"
+          icon={icons.person}
+        />
+        <Field
+          label="Nome de usuário"
+          name="username"
+          placeholder="Ex.: maria.silva"
+          autoComplete="username"
+          icon={icons.person}
+        />
+        <Field
+          label="E-mail"
+          name="email"
+          type="email"
+          placeholder="voce@exemplo.com"
+          autoComplete="email"
+          icon={icons.email}
+        />
+        <Field
+          label="Senha"
+          name="password"
+          type="password"
+          placeholder="Mínimo de 8 caracteres"
+          autoComplete="new-password"
+          minLength={8}
+          icon={icons.lock}
+        />
 
-        <FormControl>
-          <FormControl.Label>Senha</FormControl.Label>
-          <TextInput
-            type="password"
-            value={password}
-            onChange={(event) => {
-              setPassword(event.target.value);
-            }}
-            block
+        <Section
+          title={isInstructor ? "Dados do instrutor" : "Dados pessoais"}
+          hint="Usamos essas informações para validar seu perfil com segurança."
+          icon={icons.clipboard}
+        >
+          <Field
+            label="CPF"
+            name="cpf"
+            placeholder="000.000.000-00"
+            icon={icons.document}
           />
-        </FormControl>
+          <Field
+            label="Data de nascimento"
+            name="birth_date"
+            type="date"
+            placeholder="dd/mm/aaaa"
+            autoComplete="bday"
+            icon={icons.calendar}
+          />
+          <Field
+            label="Telefone"
+            name="phone"
+            type="tel"
+            placeholder="(00) 00000-0000"
+            autoComplete="tel"
+            icon={icons.phone}
+          />
+          {isInstructor && (
+            <>
+              <Field
+                label="Credencial de instrutor"
+                name="instructor_credential"
+                placeholder="Número da credencial"
+                icon={icons.badge}
+              />
+              <Field
+                label="CNH"
+                name="cnh"
+                placeholder="Número da CNH"
+                icon={icons.license}
+              />
+              <Field
+                label="CRV"
+                name="crv"
+                placeholder="Número do CRV do veículo"
+                icon={icons.car}
+              />
+            </>
+          )}
+        </Section>
 
-        <Stack.Item>
-          <Button type="submit" variant="primary">
-            Criar Conta
-          </Button>
-        </Stack.Item>
-      </Stack>
-    </form>
+        <Checkbox name="terms" required small>
+          Concordo com os <TextButton inline>Termos de Uso</TextButton> e a
+          Política de Privacidade.
+        </Checkbox>
+
+        <SubmitButton>Criar minha conta</SubmitButton>
+      </Form>
+    </>
   );
 }
