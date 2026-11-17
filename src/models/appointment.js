@@ -94,6 +94,16 @@ async function update(appointmentId, userId, inputValues) {
           action: "Verifique se o motivo para cancelamento está preenchido.",
         });
       }
+      // RF09 e RF10: só pode cancelar com pelo menos 48 horas de antecedência
+      const hoursUntilClass =
+        (new Date(currentAppointment.starts_at) - new Date()) / 1000 / 60 / 60;
+      if (hoursUntilClass < 48) {
+        throw new ValidationError({
+          message:
+            "A aula só pode ser cancelada com pelo menos 48 horas de antecedência.",
+          action: "Entre em contato com o instrutor ou com o aluno.",
+        });
+      }
       inputValues.canceled_at = new Date().toISOString();
       inputValues.canceled_by = userId;
     }

@@ -3,6 +3,8 @@ import controller from "infra/controller.js";
 import user from "models/user.js";
 import appointment from "models/appointment.js";
 import { ForbiddenError } from "infra/errors.js";
+import email from "infra/email.js";
+import webserver from "infra/webserver.js";
 
 export default createRouter()
   .use(controller.injectAnonymousOrUser)
@@ -47,6 +49,26 @@ async function postHandler(request, response) {
     userStudentTryingToPost.id,
     inputValues,
   );
+
+  // RF07: avisa o aluno e o instrutor por e-mail
+  const classDate = new Date(newAppointment.starts_at).toLocaleString("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+  });
+  await email.send({
+    from: "Conduzindo Para O Futuro <contato@conduzindoparaofuturo.com.br>",
+    to: [userStudentTryingToPost.email, targetUserInstructor.email],
+    subject: "Nova aula agendada no Conduzindo Para O Futuro!",
+    text: `Uma aula foi agendada.
+
+Aluno: ${userStudentTryingToPost.fullname}
+Instrutor: ${targetUserInstructor.fullname}
+Data: ${classDate}
+
+Acompanhe em: ${webserver.origin}/aulas
+
+Atenciosamente,
+Equipe Conduzindo Para O Futuro`,
+  });
 
   return response.status(201).json(newAppointment);
 }
