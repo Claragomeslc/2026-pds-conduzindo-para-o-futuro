@@ -193,6 +193,9 @@ async function update(username, userInputValues) {
           cnh = $10,
           cnh_category = $11,
           crv = $12,
+          price = $13,
+          region = $14,
+          description = $15,
           updated_at = timezone('utc', now())
         WHERE
           id = $1
@@ -212,6 +215,9 @@ async function update(username, userInputValues) {
         userWithNewValues.cnh,
         userWithNewValues.cnh_category,
         userWithNewValues.crv,
+        userWithNewValues.price,
+        userWithNewValues.region,
+        userWithNewValues.description,
       ],
     });
 
@@ -428,6 +434,21 @@ async function queryAll(userInputParams) {
     values.push(filters.cnh_category);
     countValues.push(filters.cnh_category);
     sqlQuery += ` AND cnh_category LIKE '%'||$${values.length}||'%' `;
+  }
+  if (filters.username) {
+    values.push(filters.username);
+    countValues.push(filters.username);
+    sqlQuery += ` AND LOWER(username) = LOWER($${values.length}) `;
+  }
+  if (filters.region) {
+    values.push(filters.region);
+    countValues.push(filters.region);
+    sqlQuery += ` AND unaccent(region) ILIKE unaccent('%'||$${values.length}||'%') `;
+  }
+  if (filters.max_price) {
+    values.push(filters.max_price);
+    countValues.push(filters.max_price);
+    sqlQuery += ` AND price <= $${values.length} `;
   }
   if (filters.fullname) {
     values.push(filters.fullname);
