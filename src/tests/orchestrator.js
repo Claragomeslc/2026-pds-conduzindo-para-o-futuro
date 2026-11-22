@@ -136,7 +136,7 @@ async function createInstructorAvailability(availabilityObject) {
 }
 
 async function createAppointment(appointmentObject) {
-  const appointmentStartsAt = faker.date.anytime();
+  const appointmentStartsAt = new Date();
   appointmentStartsAt.setDate(appointmentStartsAt.getDate() + 5);
   appointmentStartsAt.setHours(appointmentStartsAt.getHours());
   appointmentStartsAt.setMinutes(0);

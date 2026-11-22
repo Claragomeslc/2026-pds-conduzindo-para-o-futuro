@@ -94,6 +94,15 @@ async function update(appointmentId, userId, inputValues) {
           action: "Verifique se o motivo para cancelamento está preenchido.",
         });
       }
+            const hoursUntilClass =
+        (new Date(currentAppointment.starts_at) - new Date()) / (1000 * 60 * 60);
+      if (hoursUntilClass < 48) {
+        throw new ValidationError({
+          message: "O cancelamento só é permitido com 48 horas de antecedência.",
+          action: "Verifique se faltam pelo menos 48 horas para o início da aula.",
+        });
+      }
+
       inputValues.canceled_at = new Date().toISOString();
       inputValues.canceled_by = userId;
     }
