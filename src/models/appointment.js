@@ -276,7 +276,17 @@ async function queryAll(userId, inputParams) {
   const sort = inputParams.sort || {};
   const sortFields = [];
   Object.keys(sort).forEach((chave) => {
-    sortFields.push(`${chave} ${sort[chave].toUpperCase()}`);
+        const direction = String(sort[chave]).toUpperCase();
+    const allowedFields = ["starts_at", "ends_at"];
+
+    if (!allowedFields.includes(chave) || !["ASC", "DESC"].includes(direction)) {
+      throw new ValidationError({
+        message: "O campo ou a direção de ordenação informados são inválidos.",
+        action: "Utilize um dos campos de ordenação permitidos e ASC ou DESC.",
+      });
+    }
+
+    sortFields.push(`${chave} ${direction}`);
   });
   if (sortFields.length > 0) {
     sqlSort += ` ORDER BY ${sortFields.join(", ")} `;
