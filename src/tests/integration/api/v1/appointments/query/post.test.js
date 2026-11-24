@@ -481,9 +481,19 @@ describe("POST /api/v1/appointments/query", () => {
       });
       await orchestrator.activateUser(createdUserStudent2);
 
+           // horário diferente da aula 1, para não conflitar com o mesmo instrutor
+      const secondAppointmentStartsAt = new Date();
+      secondAppointmentStartsAt.setDate(secondAppointmentStartsAt.getDate() + 6);
+      secondAppointmentStartsAt.setHours(10, 0, 0, 0);
+
+      const secondAppointmentEndsAt = new Date(secondAppointmentStartsAt);
+      secondAppointmentEndsAt.setHours(11, 0, 0, 0);
+
       await orchestrator.createAppointment({
         instructor_id: createdUserInstructor.id,
         student_id: createdUserStudent2.id,
+        starts_at: secondAppointmentStartsAt.toISOString(),
+        ends_at: secondAppointmentEndsAt.toISOString(),
         observations: "Aula de teste 2",
       });
 

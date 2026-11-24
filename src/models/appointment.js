@@ -40,6 +40,13 @@ async function create(studentId, inputValues) {
 
   inputValues.day_of_week = getDayOfWeek(inputValues.starts_at);
 
+  // RNF07: o instrutor não pode ter duas aulas em horários que se cruzam
+  await validateNoOverlap(
+    inputValues.instructor_id,
+    inputValues.starts_at,
+    inputValues.ends_at,
+  );
+
   const newAppointment = await runInsertQuery(inputValues);
 
   return newAppointment;
@@ -94,7 +101,7 @@ async function update(appointmentId, userId, inputValues) {
           action: "Verifique se o motivo para cancelamento está preenchido.",
         });
       }
-            const hoursUntilClass =
+      const hoursUntilClass =
         (new Date(currentAppointment.starts_at) - new Date()) / (1000 * 60 * 60);
       if (hoursUntilClass < 48) {
         throw new ValidationError({
@@ -109,6 +116,17 @@ async function update(appointmentId, userId, inputValues) {
   }
 
   const appointmentWithNewValues = { ...currentAppointment, ...inputValues };
+
+  // RNF07: se o horário mudou, confere se não cruza com outra aula do instrutor
+  const changesSchedule = "starts_at" in inputValues || "ends_at" in inputValues;
+  if (changesSchedule && appointmentWithNewValues.status !== "canceled") {
+    await validateNoOverlap(
+      appointmentWithNewValues.instructor_id,
+      appointmentWithNewValues.starts_at,
+      appointmentWithNewValues.ends_at,
+      appointmentId,
+    );
+  }
 
   const updatedAppointment = await runUpdateQuery(appointmentWithNewValues);
   return updatedAppointment;
@@ -159,6 +177,42 @@ async function update(appointmentId, userId, inputValues) {
       ],
     });
     return results.rows[0];
+  }
+}
+
+// Verifica se o instrutor já tem uma aula (que não esteja cancelada ou livre)
+// cujo horário se cruza com o intervalo informado.
+// Aulas coladas (uma termina quando a outra começa) são permitidas.
+// ignoreId serve para o update não comparar a aula com ela mesma.
+async function validateNoOverlap(
+  instructorId,
+  startsAt,
+  endsAt,
+  ignoreId = null,
+) {
+  const results = await database.query({
+    text: `
+      SELECT
+        id
+      FROM
+        appointments
+      WHERE
+        instructor_id = $1
+        AND status NOT IN ('canceled', 'free')
+        AND starts_at < $3
+        AND ends_at > $2
+        AND ($4::uuid IS NULL OR id <> $4)
+      LIMIT
+        1
+      ;`,
+    values: [instructorId, startsAt, endsAt, ignoreId],
+  });
+
+  if (results.rowCount > 0) {
+    throw new ValidationError({
+      message: "O instrutor já possui uma aula agendada neste horário.",
+      action: "Escolha outro horário para o agendamento.",
+    });
   }
 }
 
@@ -285,7 +339,7 @@ async function queryAll(userId, inputParams) {
   const sort = inputParams.sort || {};
   const sortFields = [];
   Object.keys(sort).forEach((chave) => {
-        const direction = String(sort[chave]).toUpperCase();
+    const direction = String(sort[chave]).toUpperCase();
     const allowedFields = ["starts_at", "ends_at"];
 
     if (!allowedFields.includes(chave) || !["ASC", "DESC"].includes(direction)) {
