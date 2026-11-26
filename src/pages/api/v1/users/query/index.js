@@ -10,7 +10,11 @@ export default createRouter()
 
 async function postHandler(request, response) {
   const userTryingToQuery = request.context.user;
-  const userInputParams = request.body;
+  const userInputParams = request.body || {};
+  userInputParams.filters = {
+    ...(userInputParams.filters || {}),
+    role: "instructor",
+  };
   const results = await user.queryAll(userInputParams);
 
   const users = [];

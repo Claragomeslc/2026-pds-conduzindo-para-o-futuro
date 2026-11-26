@@ -52,8 +52,16 @@ function filterOutput(user, feature, resource) {
   validateResource(resource);
 
   if (feature === "query:user:instructor") {
-    delete resource.password;
-    return resource;
+    return {
+      id: resource.id,
+      fullname: resource.fullname,
+      username: resource.username,
+      email: resource.email,
+      phone: resource.phone,
+      cnh_category: resource.cnh_category,
+      instructor_credential: resource.instructor_credential,
+      created_at: resource.created_at,
+    };
   }
 
   if (feature === "read:user") {
