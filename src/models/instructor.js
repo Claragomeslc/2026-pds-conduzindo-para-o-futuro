@@ -179,11 +179,80 @@ async function queryAll(instructorId, inputParams) {
   };
 }
 
+// Devolve os horários que o instrutor ofereceu (status "open") e que
+// ainda estão livres, dentro do período informado (from e to: "AAAA-MM-DD").
+async function queryFreeSlots(instructorId, from, to) {
+  const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+  const fromDate = new Date(from);
+  const toDate = new Date(to);
+
+  if (
+    !datePattern.test(from) ||
+    !datePattern.test(to) ||
+    isNaN(fromDate.getTime()) ||
+    isNaN(toDate.getTime()) ||
+    fromDate > toDate
+  ) {
+    throw new ValidationError({
+      message: "O período informado é inválido.",
+      action: "Informe as datas no formato AAAA-MM-DD, com início antes do fim.",
+    });
+  }
+
+  const days = (toDate - fromDate) / (1000 * 60 * 60 * 24);
+  if (days > 31) {
+    throw new ValidationError({
+      message: "O período informado é longo demais.",
+      action: "Consulte no máximo 31 dias por vez.",
+    });
+  }
+
+  const results = await database.query({
+    text: `
+      WITH days AS (
+        SELECT generate_series($2::timestamp, $3::timestamp, interval '1 day')::date AS day
+      ),
+      slots AS (
+        SELECT
+          a.id AS availability_id,
+          (d.day + a.start_time) AT TIME ZONE 'America/Sao_Paulo' AS starts_at,
+          (d.day + a.end_time) AT TIME ZONE 'America/Sao_Paulo' AS ends_at
+        FROM days d
+        JOIN instructor_availabilities a
+          ON a.instructor_id = $1
+          AND a.status = 'open'
+          AND a.day_of_week = (
+            ARRAY['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
+          )[EXTRACT(DOW FROM d.day)::int + 1]
+      )
+      SELECT s.availability_id, s.starts_at, s.ends_at
+      FROM slots s
+      WHERE s.starts_at > now()
+        AND NOT EXISTS (
+          SELECT 1
+          FROM appointments p
+          WHERE p.instructor_id = $1
+            AND p.status NOT IN ('canceled', 'free')
+            AND p.starts_at < s.ends_at
+            AND p.ends_at > s.starts_at
+        )
+      ORDER BY s.starts_at
+      ;`,
+    values: [instructorId, from, to],
+  });
+
+  return {
+    total: results.rowCount,
+    slots: results.rows,
+  };
+}
+
 const instructor = {
   findOneByInstructorAndAvailabilityId,
   createAvailability,
   updateAvailability,
   queryAll,
+  queryFreeSlots,
 };
 
 export default instructor;
